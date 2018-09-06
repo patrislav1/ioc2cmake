@@ -67,10 +67,10 @@ if __name__ == "__main__":
     cmakeConf = {
         "CUBEMX_PROJNAME": iocConf["ProjectManager.ProjectName"],
         "CUBEMX_MCUFAMILY": iocConf["Mcu.Family"] + "xx",
-        "CUBEMX_MCUNAME": iocConf["Mcu.Name"],
-        "CUBEMX_MCULINE": iocConf["Mcu.Name"][0:9] + "xx",
+        "CUBEMX_MCUNAME": iocConf["PCC.PartNumber"],
+        "CUBEMX_MCULINE": iocConf["PCC.PartNumber"][0:9] + "xx",
         "CUBEMX_LDFILE": os.path.join(args.srcPath,
-                                      iocConf["Mcu.Name"] + "_FLASH.ld"),
+                                      iocConf["PCC.PartNumber"] + "_FLASH.ld"),
         "CUBEMX_CPUTYPE": getCore(iocConf["Mcu.Family"]),
         "CUBEMX_TOOLCHAIN": args.t
     }
