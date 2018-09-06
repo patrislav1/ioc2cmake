@@ -2,13 +2,14 @@ cmake_minimum_required (VERSION 3.6)
 
 # Generate config from CubeMX file
 execute_process(COMMAND ${CMAKE_SOURCE_DIR}/ioc2cmake.py
-    ${CMAKE_SOURCE_DIR}             # Path to source tree
-    ${CMAKE_SOURCE_DIR}/TDLAS.ioc   # Path to CubeMX config file
-    -s ${CMAKE_SOURCE_DIR}/app      # Extra source folder
-    -i ${CMAKE_SOURCE_DIR}/app      # Extra include folder
+    ${CMAKE_SOURCE_DIR}                 # Path to source tree
+    ${CMAKE_SOURCE_DIR}/cubemx-proj.ioc # Path to CubeMX project file
+    -s ${CMAKE_SOURCE_DIR}/app          # Extra source folder
+    -i ${CMAKE_SOURCE_DIR}/app          # Extra include folder
     -t /opt/gcc-arm-none-eabi-7-2017-q4-major   # Toolchain location
-    -v                              # Create vscode properties file
-    OUTPUT_VARIABLE ConfigContents)
+    -v                                  # Create vscode properties file
+    OUTPUT_VARIABLE ConfigContents
+)
 
 # Read CUBEMX_* variables from config
 foreach(KeyValue ${ConfigContents})
@@ -70,8 +71,9 @@ set_target_properties(
 # Set linker flags
 set_target_properties(
     ${CUBEMX_PROJNAME}.elf PROPERTIES LINK_FLAGS
-    "${CUBEMX_MCUFLAGS} -specs=nano.specs -T${CMAKE_SOURCE_DIR}/${CUBEMX_LDFILE} \
-    -Wl,-Map=${PROJECT_BINARY_DIR}/${CUBEMX_PROJNAME}.map,--cref -Wl,--gc-sections")
+    "${CUBEMX_MCUFLAGS} -specs=nano.specs -T${CUBEMX_LDFILE} \
+    -Wl,-Map=${PROJECT_BINARY_DIR}/${CUBEMX_PROJNAME}.map,--cref -Wl,--gc-sections"
+)
 
 # Convert .elf to .bin
 add_custom_target(${CUBEMX_PROJNAME}.bin ALL
@@ -95,7 +97,8 @@ add_custom_target(${CUBEMX_PROJNAME}.hex ALL
 add_custom_target(flash
     st-flash --format ihex write ${CUBEMX_PROJNAME}.hex
     DEPENDS ${CUBEMX_PROJNAME}.hex
-    COMMENT "Flashing target hardware")
+    COMMENT "Flashing target hardware"
+)
 
 # Copy firmware to installation medium
 #install(FILES ${PROJECT_BINARY_DIR}/${CUBEMX_PROJNAME}.bin

@@ -69,7 +69,8 @@ if __name__ == "__main__":
         "CUBEMX_MCUFAMILY": iocConf["Mcu.Family"] + "xx",
         "CUBEMX_MCUNAME": iocConf["Mcu.Name"],
         "CUBEMX_MCULINE": iocConf["Mcu.Name"][0:9] + "xx",
-        "CUBEMX_LDFILE": iocConf["Mcu.Name"] + "_FLASH.ld",
+        "CUBEMX_LDFILE": os.path.join(args.srcPath,
+                                      iocConf["Mcu.Name"] + "_FLASH.ld"),
         "CUBEMX_CPUTYPE": getCore(iocConf["Mcu.Family"]),
         "CUBEMX_TOOLCHAIN": args.t
     }
