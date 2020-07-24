@@ -69,15 +69,13 @@ if __name__ == "__main__":
         "CUBEMX_MCUFAMILY": iocConf["Mcu.Family"] + "xx",
         "CUBEMX_MCUNAME": iocConf["Mcu.UserName"],
         "CUBEMX_MCULINE": iocConf["Mcu.UserName"][0:9] + "xx",
-        "CUBEMX_LDFILE": os.path.join(args.srcPath,
-                                      iocConf["Mcu.UserName"] + "_FLASH.ld"),
+        "CUBEMX_LDFILE": '/'.join([args.srcPath, iocConf["Mcu.UserName"] + "_FLASH.ld"]),
         "CUBEMX_CPUTYPE": getCore(iocConf["Mcu.Family"]),
         "CUBEMX_TOOLCHAIN": args.t
     }
 
     cmakeConf["CUBEMX_STARTUPFILE"] = \
-        os.path.join(args.srcPath,
-                     "startup_" + cmakeConf["CUBEMX_MCULINE"].lower() + ".s")
+        '/'.join([args.srcPath, "startup_" + cmakeConf["CUBEMX_MCULINE"].lower() + ".s"])
 
     core = getCore(iocConf["Mcu.Family"])
     mcuFlags = f"-mcpu={core} -mthumb"
@@ -97,26 +95,24 @@ if __name__ == "__main__":
     ]
     cmakeConf["CUBEMX_CDEFS"] = "\n".join([f"-D{cdef}" for cdef in cdefs])
 
-    cmsisDir = os.path.join(args.srcPath, "Drivers", "CMSIS")
-    deviceDir = os.path.join(cmsisDir,
-                             "Device", "ST", cmakeConf["CUBEMX_MCUFAMILY"])
-    halDir = os.path.join(args.srcPath,
-                          "Drivers", cmakeConf["CUBEMX_MCUFAMILY"] + "_HAL_Driver")
+    cmsisDir = '/'.join([args.srcPath, "Drivers", "CMSIS"])
+    deviceDir = '/'.join([cmsisDir, "Device", "ST", cmakeConf["CUBEMX_MCUFAMILY"]])
+    halDir = '/'.join([args.srcPath, "Drivers", cmakeConf["CUBEMX_MCUFAMILY"] + "_HAL_Driver"])
 
     sourceDirs = [
-        os.path.join(args.srcPath, "Src"),
-#       os.path.join(deviceDir, "Source"),
-        os.path.join(halDir, "Src"),
+        '/'.join([args.srcPath, "Src"]),
+#       '/'.join([deviceDir, "Source"]),
+        '/'.join([halDir, "Src"]),
     ]
     if args.s:
         sourceDirs += args.s
     cmakeConf["CUBEMX_SOURCEDIRS"] = "\n".join(sourceDirs + args.s)
 
     includeDirs = [
-        os.path.join(args.srcPath, "Inc"),
-        os.path.join(cmsisDir, "Include"),
-        os.path.join(deviceDir, "Include"),
-        os.path.join(halDir, "Inc"),
+        '/'.join([args.srcPath, "Inc"]),
+        '/'.join([cmsisDir, "Include"]),
+        '/'.join([deviceDir, "Include"]),
+        '/'.join([halDir, "Inc"]),
     ]
     if args.i:
         includeDirs += args.i
@@ -132,12 +128,12 @@ if __name__ == "__main__":
                 {
                     "name": "Linux",
                     "includePath": [
-                        os.path.join("${workspaceFolder}", i)
+                        '/'.join(["${workspaceFolder}", i])
                         for i in includeDirs
                     ],
                     "defines": cdefs,
                     "compilerPath":
-                        os.path.join(args.t, "bin/arm-none-eabi-gcc"),
+                        '/'.join([args.t, "bin/arm-none-eabi-gcc"]),
                     "cStandard": "c11",
                     "intelliSenseMode": "clang-x64"
                 }
@@ -163,13 +159,13 @@ if __name__ == "__main__":
             "cortex-debug.armToolchainPath": f"{args.t}/bin"
         }
 
-        os.makedirs(os.path.join(args.srcPath, ".vscode"), exist_ok=True)
-        with open(os.path.join(args.srcPath, ".vscode", "c_cpp_properties.json"),
+        os.makedirs('/'.join([args.srcPath, ".vscode"]), exist_ok=True)
+        with open('/'.join([args.srcPath, ".vscode", "c_cpp_properties.json"]),
                   'w') as outfile:
             json.dump(vscodeSetup, outfile, sort_keys=True, indent=4)
-        with open(os.path.join(args.srcPath, ".vscode", "launch.json"),
+        with open('/'.join([args.srcPath, ".vscode", "launch.json"]),
                   'w') as outfile:
             json.dump(launchSetup, outfile, sort_keys=True, indent=4)
-        with open(os.path.join(args.srcPath, ".vscode", "settings.json"),
+        with open('/'.join([args.srcPath, ".vscode", "settings.json"]),
                   'w') as outfile:
             json.dump(settingsSetup, outfile, sort_keys=True, indent=4)
