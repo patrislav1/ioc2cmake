@@ -1,12 +1,28 @@
 cmake_minimum_required (VERSION 3.6)
 
+find_program(PYTHON3 python3)
+if(${PYTHON3} MATCHES "PYTHON3-NOTFOUND")
+    find_program(PYTHON3 python)
+    if(${PYTHON3} MATCHES "PYTHON3-NOTFOUND")
+        message(FATAL_ERROR "Python3 not found!")
+    endif()
+endif()
+
+if(NOT WIN32)
+    # Under Linux, we set explicit path to the toolchain
+    set(ARMGCC_LOCATION "/opt/gcc-arm-none-eabi-7-2017-q4-major")
+else()
+    # Under Windows, the toolchain has to be in the PATH
+    set(ARMGCC_LOCATION "")
+endif()
+
 # Generate config from CubeMX file
 execute_process(COMMAND python ${CMAKE_SOURCE_DIR}/ioc2cmake.py
     ${CMAKE_SOURCE_DIR}                 # Path to source tree
     ${CMAKE_SOURCE_DIR}/cubemx-proj.ioc # Path to CubeMX project file
     -s ${CMAKE_SOURCE_DIR}/app          # Extra source folder
     -i ${CMAKE_SOURCE_DIR}/app          # Extra include folder
-    -t "" #"/opt/gcc-arm-none-eabi-7-2017-q4-major"
+    -t "${ARMGCC_LOCATION}"
     -v                                  # Create vscode properties file
     OUTPUT_VARIABLE ConfigContents
 )
@@ -18,8 +34,10 @@ foreach(KeyValue ${ConfigContents})
   set(${Key} "${Value}")
 endforeach()
 
+# Fix cross compiler checks on Windows
 set(CMAKE_TRY_COMPILE_TARGET_TYPE "STATIC_LIBRARY")
 set(CMAKE_SYSTEM_NAME Generic)
+
 set(CMAKE_C_COMPILER "${CUBEMX_TOOLCHAIN}arm-none-eabi-gcc")
 
 message(STATUS "Project name : ${CUBEMX_PROJNAME}")
