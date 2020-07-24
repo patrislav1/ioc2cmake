@@ -1,12 +1,12 @@
 cmake_minimum_required (VERSION 3.6)
 
 # Generate config from CubeMX file
-execute_process(COMMAND ${CMAKE_SOURCE_DIR}/ioc2cmake.py
+execute_process(COMMAND python ${CMAKE_SOURCE_DIR}/ioc2cmake.py
     ${CMAKE_SOURCE_DIR}                 # Path to source tree
     ${CMAKE_SOURCE_DIR}/cubemx-proj.ioc # Path to CubeMX project file
     -s ${CMAKE_SOURCE_DIR}/app          # Extra source folder
     -i ${CMAKE_SOURCE_DIR}/app          # Extra include folder
-    -t /opt/gcc-arm-none-eabi-7-2017-q4-major   # Toolchain location
+    -t "" #"/opt/gcc-arm-none-eabi-7-2017-q4-major"
     -v                                  # Create vscode properties file
     OUTPUT_VARIABLE ConfigContents
 )
@@ -18,14 +18,18 @@ foreach(KeyValue ${ConfigContents})
   set(${Key} "${Value}")
 endforeach()
 
+set(CMAKE_TRY_COMPILE_TARGET_TYPE "STATIC_LIBRARY")
+set(CMAKE_SYSTEM_NAME Generic)
+set(CMAKE_C_COMPILER "${CUBEMX_TOOLCHAIN}arm-none-eabi-gcc")
+
 message(STATUS "Project name : ${CUBEMX_PROJNAME}")
 message(STATUS "MCU name     : ${CUBEMX_MCUNAME}")
-
-project(${CUBEMX_PROJNAME})
 
 set(OPT "-Og")
 set(LIBS "-lc -lm -lnosys -u _printf_float")
 set(CMAKE_C_COMPILER "${CUBEMX_TOOLCHAIN}/bin/arm-none-eabi-gcc")
+
+project(${CUBEMX_PROJNAME})
 
 # Set up include directories
 string(REPLACE "\n" ";" CUBEMX_INCLUDEDIRS "${CUBEMX_INCLUDEDIRS}")
@@ -77,7 +81,7 @@ set_target_properties(
 
 # Convert .elf to .bin
 add_custom_target(${CUBEMX_PROJNAME}.bin ALL
-    "${CUBEMX_TOOLCHAIN}/bin/arm-none-eabi-objcopy" -Obinary
+    "${CUBEMX_TOOLCHAIN}arm-none-eabi-objcopy" -Obinary
     "${PROJECT_BINARY_DIR}/${CUBEMX_PROJNAME}.elf"
     "${PROJECT_BINARY_DIR}/${CUBEMX_PROJNAME}.bin"
     DEPENDS ${CUBEMX_PROJNAME}.elf
@@ -86,7 +90,7 @@ add_custom_target(${CUBEMX_PROJNAME}.bin ALL
 
 # Convert .elf to .hex
 add_custom_target(${CUBEMX_PROJNAME}.hex ALL
-    "${CUBEMX_TOOLCHAIN}/bin/arm-none-eabi-objcopy" -Oihex
+    "${CUBEMX_TOOLCHAIN}arm-none-eabi-objcopy" -Oihex
     "${PROJECT_BINARY_DIR}/${CUBEMX_PROJNAME}.elf"
     "${PROJECT_BINARY_DIR}/${CUBEMX_PROJNAME}.hex"
     DEPENDS ${CUBEMX_PROJNAME}.elf
