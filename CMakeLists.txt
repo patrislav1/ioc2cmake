@@ -17,7 +17,7 @@ else()
 endif()
 
 # Generate config from CubeMX file
-execute_process(COMMAND python ${CMAKE_SOURCE_DIR}/ioc2cmake.py
+execute_process(COMMAND ${PYTHON3} ${CMAKE_SOURCE_DIR}/ioc2cmake.py
     ${CMAKE_SOURCE_DIR}                 # Path to source tree
     ${CMAKE_SOURCE_DIR}/cubemx-proj.ioc # Path to CubeMX project file
     -s ${CMAKE_SOURCE_DIR}/app          # Extra source folder
