@@ -2,13 +2,13 @@
 
 This is a small Python tool that allows building [STM32CubeMX](https://www.st.com/en/development-tools/stm32cubemx.html) generated firmware with [CMake](https://cmake.org/). It parses STM32CubeMX `*.ioc` project files and generates CMake variables containing the appropriate settings for the microcontroller (include paths, compiler flags, etc.).
 
-It can also generate a `c_cpp_properties.json` config file for [VScode](https://code.visualstudio.com/), containing the relevant include paths & compiler definitions to run VScode as IDE for the firmware project.
+For [VScode](https://code.visualstudio.com/), it generates a `c_cpp_properties.json` config file, containing the relevant include paths & compiler definitions - as well as `launch.json` and `settings.json` files for the debugger. (The [CortexDebug](https://github.com/Marus/cortex-debug) extension should be installed in order to use the debugger). With these config files, VScode can be used as an IDE for the firmware project.
 
 ### How it works
 
 `ioc2cmake` is called at configuration stage from within the CMake script. It spits out a list of `key=value` pairs on stdout, which are captured by the CMake script and saved in variables. These variables are then used to configure the firmware build.
 
-Since the STM32 MCU type, include paths etc. are not hardcoded in the `CMakeLists.txt` but generated at configure stage, firmware can be ported to different MCUs without changing the CMake script, and the CMake script can be reused on firmwares targeting other STM32 MCUs.
+Because the STM32 MCU type, include paths etc. are not hardcoded in the `CMakeLists.txt` but generated at configure stage, firmware can be ported to different MCUs without changing the build script, and the build script can be reused on firmwares targeting other STM32 MCUs.
 
 ### Usage
 Call `ioc2cmake` from the CMake script like this:
