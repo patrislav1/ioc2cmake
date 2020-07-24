@@ -144,7 +144,32 @@ if __name__ == "__main__":
             ],
             "version": 4
         }
+        launchSetup = {
+            "configurations": [
+                {
+                    "name": "Cortex Debug",
+                    "cwd": "${workspaceRoot}",
+                    "executable": f"./build/{iocConf['ProjectManager.ProjectName']}.elf",
+                    "request": "attach",
+                    "type": "cortex-debug",
+                    "servertype": "openocd",
+                    "configFiles": [
+                        "interface/stlink-v2.cfg", "target/stm32l4x.cfg"
+                    ]
+                }
+            ]
+        }
+        settingsSetup = {
+            "cortex-debug.armToolchainPath": f"{args.t}/bin"
+        }
+
         os.makedirs(os.path.join(args.srcPath, ".vscode"), exist_ok=True)
         with open(os.path.join(args.srcPath, ".vscode", "c_cpp_properties.json"),
                   'w') as outfile:
             json.dump(vscodeSetup, outfile, sort_keys=True, indent=4)
+        with open(os.path.join(args.srcPath, ".vscode", "launch.json"),
+                  'w') as outfile:
+            json.dump(launchSetup, outfile, sort_keys=True, indent=4)
+        with open(os.path.join(args.srcPath, ".vscode", "settings.json"),
+                  'w') as outfile:
+            json.dump(settingsSetup, outfile, sort_keys=True, indent=4)
