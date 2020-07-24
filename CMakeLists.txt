@@ -140,6 +140,12 @@ add_custom_target(flash
     COMMENT "Flashing target hardware"
 )
 
+# Mass erase target
+add_custom_target(erase
+    openocd -f ${CMAKE_SOURCE_DIR}/openocd.cfg -c "init" -c "halt" -c "stm32l4x mass_erase 0" -c "exit"
+    COMMENT "Erasing chip"
+)
+
 # Copy firmware to installation medium
 #install(FILES ${PROJECT_BINARY_DIR}/${CUBEMX_PROJNAME}.bin
 #    DESTINATION /foo/bar
