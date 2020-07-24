@@ -154,7 +154,7 @@ if __name__ == "__main__":
                     "type": "cortex-debug",
                     "servertype": "openocd",
                     "configFiles": [
-                        "interface/stlink-v2.cfg", "target/stm32l4x.cfg"
+                        "${workspaceRoot}/openocd.cfg"
                     ]
                 }
             ]
