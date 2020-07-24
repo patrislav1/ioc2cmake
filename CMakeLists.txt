@@ -105,6 +105,15 @@ add_custom_target(${CUBEMX_PROJNAME}.bin ALL
     COMMENT "Generating .bin file"
 )
 
+# Convert .elf to .lst
+add_custom_target(${CUBEMX_PROJNAME}.lst ALL
+    "${CUBEMX_TOOLCHAIN}arm-none-eabi-objdump" -S
+    "${PROJECT_BINARY_DIR}/${CUBEMX_PROJNAME}.elf"
+    > "${PROJECT_BINARY_DIR}/${CUBEMX_PROJNAME}.lst"
+    DEPENDS ${CUBEMX_PROJNAME}.elf
+    COMMENT "Generating .lst file"
+)
+
 # Convert .elf to .hex
 add_custom_target(${CUBEMX_PROJNAME}.hex ALL
     "${CUBEMX_TOOLCHAIN}arm-none-eabi-objcopy" -Oihex
@@ -114,6 +123,9 @@ add_custom_target(${CUBEMX_PROJNAME}.hex ALL
     COMMENT "Generating .hex file"
 )
 
+set_directory_properties(PROPERTIES ADDITIONAL_MAKE_CLEAN_FILES
+    "${PROJECT_BINARY_DIR}/${CUBEMX_PROJNAME}.bin;${PROJECT_BINARY_DIR}/${CUBEMX_PROJNAME}.lst;${PROJECT_BINARY_DIR}/${CUBEMX_PROJNAME}.map"
+)
 # Flash firmware to target
 add_custom_target(flash
     openocd -f ${CMAKE_SOURCE_DIR}/openocd.cfg -c "program ${CUBEMX_PROJNAME}.bin reset exit 0x08000000"
