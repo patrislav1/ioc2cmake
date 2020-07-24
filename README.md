@@ -29,14 +29,19 @@ There is an example `CMakeLists.txt` in the repository demonstrating the use of 
 
 The firmware build can be set up like a regular CMake build.
 
+It works with CubeMX LL drivers, HAL drivers, as well as with a mixed setup.
+
 ### Caveats
 
-I only use the CubeMX LL drivers, so this is not tested against a project structure using HAL drivers.  
 For Cortex-M7 MCUs, at the moment it always assumes a double-precision FPU, but there are M7's which have single precision only.
 
 Tested on following MCUs / boards so far:
-- STM32L433RC / NUCLEO-L433RC-P
-- STM32F407VG / STM32F407G-DISC1
-- STM32F767ZI / NUCLEO-F767ZI
+- STM32F407 / STM32F407G-DISC1
+- STM32F767 / NUCLEO-F767ZI
+- STM32L433 / NUCLEO-L433RC-P
+- STM32L476 / NUCLEO-L476RG
+- STM32L496 / NUCLEO-L496ZG
+- STM32L431
+- STM32L471
 
 Feedback and contributions welcome.
