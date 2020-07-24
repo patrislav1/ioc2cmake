@@ -126,6 +126,13 @@ add_custom_target(${CUBEMX_PROJNAME}.hex ALL
 set_directory_properties(PROPERTIES ADDITIONAL_MAKE_CLEAN_FILES
     "${PROJECT_BINARY_DIR}/${CUBEMX_PROJNAME}.bin;${PROJECT_BINARY_DIR}/${CUBEMX_PROJNAME}.lst;${PROJECT_BINARY_DIR}/${CUBEMX_PROJNAME}.map"
 )
+
+# Display size
+add_custom_command(TARGET ${CUBEMX_PROJNAME}.elf POST_BUILD
+    COMMAND "${CUBEMX_TOOLCHAIN}arm-none-eabi-size"
+    "${PROJECT_BINARY_DIR}/${CUBEMX_PROJNAME}.elf"
+)
+
 # Flash firmware to target
 add_custom_target(flash
     openocd -f ${CMAKE_SOURCE_DIR}/openocd.cfg -c "program ${CUBEMX_PROJNAME}.bin reset exit 0x08000000"
