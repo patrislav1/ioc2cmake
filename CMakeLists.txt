@@ -117,8 +117,8 @@ add_custom_target(${CUBEMX_PROJNAME}.hex ALL
 
 # Flash firmware to target
 add_custom_target(flash
-    st-flash --format ihex write ${CUBEMX_PROJNAME}.hex
-    DEPENDS ${CUBEMX_PROJNAME}.hex
+    openocd -f ${CMAKE_SOURCE_DIR}/openocd.cfg -c "program ${CUBEMX_PROJNAME}.bin reset exit 0x08000000"
+    DEPENDS ${CUBEMX_PROJNAME}.bin
     COMMENT "Flashing target hardware"
 )
 
