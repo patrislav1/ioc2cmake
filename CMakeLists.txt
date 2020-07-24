@@ -38,14 +38,13 @@ endforeach()
 set(CMAKE_TRY_COMPILE_TARGET_TYPE "STATIC_LIBRARY")
 set(CMAKE_SYSTEM_NAME Generic)
 
-set(CMAKE_C_COMPILER "${CUBEMX_TOOLCHAIN}arm-none-eabi-gcc")
-
 message(STATUS "Project name : ${CUBEMX_PROJNAME}")
 message(STATUS "MCU name     : ${CUBEMX_MCUNAME}")
 
 set(OPT "-Og")
 set(LIBS "-lc -lm -lnosys -u _printf_float")
-set(CMAKE_C_COMPILER "${CUBEMX_TOOLCHAIN}/bin/arm-none-eabi-gcc")
+set(CMAKE_C_COMPILER "${CUBEMX_TOOLCHAIN}arm-none-eabi-gcc")
+set(CMAKE_CXX_COMPILER "${CUBEMX_TOOLCHAIN}arm-none-eabi-g++")
 
 project(${CUBEMX_PROJNAME})
 
