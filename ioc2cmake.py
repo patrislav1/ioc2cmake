@@ -51,6 +51,9 @@ def getFpu(mcuName):
         if getCore(mcuName) == key:
             return value
 
+def joinFwdSlash(*args):
+    # CMake doesn't like paths with backslashes on Windows
+    return os.path.join(*args).replace('\\', '/')
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Create CMake and vscode config files from CubeMX .ioc project file")
@@ -69,13 +72,15 @@ if __name__ == "__main__":
         "CUBEMX_MCUFAMILY": iocConf["Mcu.Family"] + "xx",
         "CUBEMX_MCUNAME": iocConf["Mcu.UserName"],
         "CUBEMX_MCULINE": iocConf["Mcu.UserName"][0:9] + "xx",
-        "CUBEMX_LDFILE": '/'.join([args.srcPath, iocConf["Mcu.UserName"] + "_FLASH.ld"]),
+        "CUBEMX_LDFILE": joinFwdSlash(args.srcPath,
+                                      iocConf["Mcu.UserName"] + "_FLASH.ld"),
         "CUBEMX_CPUTYPE": getCore(iocConf["Mcu.Family"]),
-        "CUBEMX_TOOLCHAIN": args.t
+        "CUBEMX_TOOLCHAIN": joinFwdSlash(args.t, "bin/") if args.t else ""
     }
 
     cmakeConf["CUBEMX_STARTUPFILE"] = \
-        '/'.join([args.srcPath, "startup_" + cmakeConf["CUBEMX_MCULINE"].lower() + ".s"])
+        joinFwdSlash(args.srcPath,
+                     "startup_" + cmakeConf["CUBEMX_MCULINE"].lower() + ".s")
 
     core = getCore(iocConf["Mcu.Family"])
     mcuFlags = f"-mcpu={core} -mthumb"
@@ -95,24 +100,25 @@ if __name__ == "__main__":
     ]
     cmakeConf["CUBEMX_CDEFS"] = "\n".join([f"-D{cdef}" for cdef in cdefs])
 
-    cmsisDir = '/'.join([args.srcPath, "Drivers", "CMSIS"])
-    deviceDir = '/'.join([cmsisDir, "Device", "ST", cmakeConf["CUBEMX_MCUFAMILY"]])
-    halDir = '/'.join([args.srcPath, "Drivers", cmakeConf["CUBEMX_MCUFAMILY"] + "_HAL_Driver"])
+    cmsisDir = joinFwdSlash(args.srcPath, "Drivers", "CMSIS")
+    deviceDir = joinFwdSlash(cmsisDir,
+                             "Device", "ST", cmakeConf["CUBEMX_MCUFAMILY"])
+    halDir = joinFwdSlash(args.srcPath,
+                          "Drivers", cmakeConf["CUBEMX_MCUFAMILY"] + "_HAL_Driver")
 
     sourceDirs = [
-        '/'.join([args.srcPath, "Src"]),
-#       '/'.join([deviceDir, "Source"]),
-        '/'.join([halDir, "Src"]),
+        joinFwdSlash(args.srcPath, "Src"),
+        joinFwdSlash(halDir, "Src"),
     ]
     if args.s:
         sourceDirs += args.s
-    cmakeConf["CUBEMX_SOURCEDIRS"] = "\n".join(sourceDirs + args.s)
+    cmakeConf["CUBEMX_SOURCEDIRS"] = "\n".join(sourceDirs)
 
     includeDirs = [
-        '/'.join([args.srcPath, "Inc"]),
-        '/'.join([cmsisDir, "Include"]),
-        '/'.join([deviceDir, "Include"]),
-        '/'.join([halDir, "Inc"]),
+        joinFwdSlash(args.srcPath, "Inc"),
+        joinFwdSlash(cmsisDir, "Include"),
+        joinFwdSlash(deviceDir, "Include"),
+        joinFwdSlash(halDir, "Inc"),
     ]
     if args.i:
         includeDirs += args.i
