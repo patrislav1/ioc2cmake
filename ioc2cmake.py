@@ -3,7 +3,7 @@
 import argparse
 import os
 import json
-
+import shutil
 
 def loadIOC(filename):
     conf = {}
@@ -128,50 +128,44 @@ if __name__ == "__main__":
         print(f"{key}={value};", end="")
 
     if args.v:
+        compilerName = "arm-none-eabi-gcc"
+        defaultPath = os.path.join(args.t, "bin") if args.t else None
         # Create vscode properties
-        vscodeSetup = {
-            "configurations": [
-                {
-                    "name": "Linux",
-                    "includePath": [
-                        '/'.join(["${workspaceFolder}", i])
-                        for i in includeDirs
-                    ],
-                    "defines": cdefs,
-                    "compilerPath":
-                        '/'.join([args.t, "bin/arm-none-eabi-gcc"]),
-                    "cStandard": "c11",
-                    "intelliSenseMode": "clang-x64"
-                }
-            ],
-            "version": 4
-        }
-        launchSetup = {
-            "configurations": [
-                {
-                    "name": "Cortex Debug",
-                    "cwd": "${workspaceRoot}",
-                    "executable": f"./build/{iocConf['ProjectManager.ProjectName']}.elf",
-                    "request": "attach",
-                    "type": "cortex-debug",
-                    "servertype": "openocd",
-                    "configFiles": [
-                        "${workspaceRoot}/openocd.cfg"
-                    ]
-                }
-            ]
-        }
-        settingsSetup = {
-            "cortex-debug.armToolchainPath": f"{args.t}/bin"
+        vscodeProps = {
+            "c_cpp_properties.json": {
+                "configurations": [
+                    {
+                        "name": "Linux",
+                        "includePath": includeDirs,
+                        "defines": cdefs,
+                        "compilerPath": shutil.which(compilerName, path=defaultPath).replace('\\', '/'),
+                        "cStandard": "c11",
+                        "intelliSenseMode": "gcc-x64"
+                    }
+                ],
+                "version": 4
+            },
+            "launch.json": {
+                "configurations": [
+                    {
+                        "name": "Cortex Debug",
+                        "cwd": "${workspaceRoot}",
+                        "executable": f"${{workspaceRoot}}/build/{iocConf['ProjectManager.ProjectName']}.elf",
+                        "request": "attach",
+                        "type": "cortex-debug",
+                        "servertype": "openocd",
+                        "configFiles": [
+                            "${workspaceRoot}/openocd.cfg"
+                        ]
+                    }
+                ]
+            },
+            "settings.json": {
+                "cortex-debug.armToolchainPath": joinFwdSlash(args.t, "bin") if args.t else ""
+            }
         }
 
-        os.makedirs('/'.join([args.srcPath, ".vscode"]), exist_ok=True)
-        with open('/'.join([args.srcPath, ".vscode", "c_cpp_properties.json"]),
-                  'w') as outfile:
-            json.dump(vscodeSetup, outfile, sort_keys=True, indent=4)
-        with open('/'.join([args.srcPath, ".vscode", "launch.json"]),
-                  'w') as outfile:
-            json.dump(launchSetup, outfile, sort_keys=True, indent=4)
-        with open('/'.join([args.srcPath, ".vscode", "settings.json"]),
-                  'w') as outfile:
-            json.dump(settingsSetup, outfile, sort_keys=True, indent=4)
+        os.makedirs(os.path.join(args.srcPath, ".vscode"), exist_ok=True)
+        for k, v in vscodeProps.items():
+            with open(os.path.join(args.srcPath, ".vscode", k), 'w') as outfile:
+                json.dump(v, outfile, sort_keys=True, indent=4)
