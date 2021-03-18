@@ -1,5 +1,9 @@
 # ioc2cmake
 
+## This repository is deprecated, please use [cubemx.cmake](https://github.com/patrislav1/cubemx.cmake) instead.
+
+#
+
 This is a small Python tool that allows building [STM32CubeMX](https://www.st.com/en/development-tools/stm32cubemx.html) generated firmware with [CMake](https://cmake.org/). It parses STM32CubeMX `*.ioc` project files and generates CMake variables containing the appropriate settings for the microcontroller (include paths, compiler flags, etc.).
 
 For [VScode](https://code.visualstudio.com/), it generates a `c_cpp_properties.json` config file, containing the relevant include paths & compiler definitions - as well as `launch.json` and `settings.json` files for the debugger. (The [CortexDebug](https://github.com/Marus/cortex-debug) extension should be installed in order to use the debugger). With these config files, VScode can be used as an IDE for the firmware project.
