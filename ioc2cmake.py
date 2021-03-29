@@ -154,6 +154,7 @@ if __name__ == "__main__":
                         "request": "attach",
                         "type": "cortex-debug",
                         "servertype": "openocd",
+                        "device": iocConf["Mcu.UserName"],
                         "configFiles": [
                             "${workspaceRoot}/openocd.cfg"
                         ]
