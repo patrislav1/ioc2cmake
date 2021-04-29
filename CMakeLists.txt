@@ -46,7 +46,7 @@ set(LIBS "-lc -lm -lnosys -u _printf_float")
 set(CMAKE_C_COMPILER "${CUBEMX_TOOLCHAIN}arm-none-eabi-gcc")
 set(CMAKE_CXX_COMPILER "${CUBEMX_TOOLCHAIN}arm-none-eabi-g++")
 
-project(${CUBEMX_PROJNAME})
+project(${CUBEMX_PROJNAME} LANGUAGES C CXX ASM)
 
 # Set up include directories
 string(REPLACE "\n" ";" CUBEMX_INCLUDEDIRS "${CUBEMX_INCLUDEDIRS}")
@@ -57,13 +57,14 @@ string(REPLACE "\n" ";" CUBEMX_SOURCEDIRS "${CUBEMX_SOURCEDIRS}")
 foreach(SOURCEDIR ${CUBEMX_SOURCEDIRS})
   file(GLOB_RECURSE SOURCEFILES0 ${SOURCEDIR}/*.c)
   list(APPEND SOURCEFILES ${SOURCEFILES0})
+  file(GLOB_RECURSE SOURCEFILES0 ${SOURCEDIR}/*.cpp)
+  list(APPEND SOURCEFILES ${SOURCEFILES0})
+  file(GLOB_RECURSE SOURCEFILES0 ${SOURCEDIR}/*.s)
+  list(APPEND SOURCEFILES ${SOURCEFILES0})
 endforeach()
 
 # Compiler definitions
 add_definitions(${CUBEMX_CDEFS})
-
-# Some trickery to get CMake to deal with our assembler code.
-set_property(SOURCE ${CUBEMX_STARTUPFILE} PROPERTY LANGUAGE C)
 
 # Burn git commit hash to firmware file
 add_custom_command(
